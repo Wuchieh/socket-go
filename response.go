@@ -34,6 +34,7 @@ func ErrorResponse(err error) *Response {
 	}
 }
 
+// GetByte 不會多次解析
 func (r *Response) GetByte() []byte {
 	r.mx.Lock()
 	defer r.mx.Unlock()
