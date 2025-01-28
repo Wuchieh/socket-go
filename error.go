@@ -9,6 +9,7 @@ import (
 var (
 	ErrToListEmpty        = errors.New("to list is empty")
 	ErrToExceptDuplicates = errors.New("the to list duplicates the value of the except list")
+	ErrBinData            = errors.New("obj must be a non-nil pointer")
 )
 
 type EmitError struct {

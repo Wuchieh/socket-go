@@ -1,7 +1,9 @@
 package socket
 
 import (
+	"encoding/json"
 	"math"
+	"reflect"
 	"slices"
 )
 
@@ -106,7 +108,22 @@ func (c *Context) Except(room string) *ContextTo {
 	}
 }
 
-// Emit 訊息只會船給觸發者
+// Emit 訊息只會傳給觸發者
 func (c *Context) Emit(e string, data any) error {
 	return c.m.Emit(e, data)
+}
+
+// Bind 簡單粗暴的當作 json 解析綁定
+func (c *Context) Bind(obj any) error {
+	objVal := reflect.ValueOf(obj)
+	if objVal.Kind() != reflect.Ptr || objVal.IsNil() {
+		return ErrBinData
+	}
+
+	b, err := json.Marshal(c.Data)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(b, &obj)
 }
