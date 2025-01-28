@@ -28,12 +28,36 @@ func init() {
 		c.Emit("message", c.Data)
 	})
 
+	s.On("add", func(c *socket.Context) {
+		m := c.GetMember()
+		actual, loaded := m.Values.LoadOrStore("count", 0)
+		if !loaded {
+			c.Emit("message", actual)
+			return
+		}
+
+		ai := actual.(int)
+		ai++
+		m.Values.Store("count", ai)
+		c.Emit("message", ai)
+	})
+
 	s.On("join", func(c *socket.Context) {
-		c.Join("chatroom")
+		room, ok := c.Data.(string)
+		if !ok {
+			c.Emit("error", "room name need is string")
+			return
+		}
+		c.Join(room)
 	})
 
 	s.On("leave", func(c *socket.Context) {
-		c.Leave("chatroom")
+		room, ok := c.Data.(string)
+		if !ok {
+			c.Emit("error", "room name need is string")
+			return
+		}
+		c.Leave(room)
 	})
 
 	s.On("bind", func(c *socket.Context) {
