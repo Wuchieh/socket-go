@@ -26,6 +26,10 @@ func (m *Member) getRooms() []string {
 	return m.atRooms
 }
 
+func (m *Member) GetRooms() []string {
+	return m.getRooms()
+}
+
 func (m *Member) Close() error {
 	if m.s != nil {
 		m.s.CloseMember(m)
