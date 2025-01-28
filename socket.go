@@ -141,34 +141,34 @@ func (s *Socket) RoomLeave(room string, m *Member) {
 	}
 }
 
-func (s *Socket) Emit(e string, data any) error {
-	var members []*Member
-	s.members.Range(func(_, value interface{}) bool {
-		m, ok := value.(*Member)
-		if ok {
-			members = append(members, m)
-		}
-		return true
-	})
-
+func (s *Socket) Emit(event string, data any) error {
+	// Prepare the message
 	res := Response{
-		Event: e,
+		Event: event,
 		Data:  data,
 	}
 
-	pm, err := websocket.NewPreparedMessage(websocket.TextMessage, res.GetByte())
+	preparedMsg, err := websocket.NewPreparedMessage(websocket.TextMessage, res.GetByte())
 	if err != nil {
 		return err
 	}
 
-	for _, member := range members {
-		go func() {
-			err := member.WritePreparedMessage(pm)
-			if err != nil {
-				logf("WritePreparedMessage Error: %s", err.Error())
-			}
-		}()
-	}
+	var eErr error
 
-	return nil
+	// Send the prepared message to all members
+	s.members.Range(func(_, value interface{}) bool {
+		if member, ok := value.(*Member); ok {
+			go func(m *Member) {
+				if err := m.WritePreparedMessage(preparedMsg); err != nil {
+					eErr = addEmitErr(eErr, EmitError{
+						Member: m,
+						Err:    err,
+					})
+				}
+			}(member)
+		}
+		return true
+	})
+
+	return eErr
 }
