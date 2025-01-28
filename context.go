@@ -30,6 +30,14 @@ func (c *Context) reset() {
 	c.Event = ""
 }
 
+func (c *Context) GetSocket() *Socket {
+	return c.s
+}
+
+func (c *Context) GetMember() *Member {
+	return c.m
+}
+
 func (c *Context) Set(key string, value interface{}) {
 	if c.values == nil {
 		c.values = make(map[string]interface{})
