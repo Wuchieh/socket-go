@@ -108,24 +108,43 @@ func (c *ContextTo) getToMembers() []*Member {
 }
 
 func (c *ContextTo) getMembers() []*Member {
-	to := c.getToMembers()
-	except := c.getExceptMembers()
+	to := c.getToMembers() // 已去重
 
-	toMap := make(map[*Member]struct{})
+	// 邊界條件：若 except 為空，直接返回結果
+	if len(c.except) == 0 {
+		return to
+	}
+
+	// 預處理例外集合
+	exceptSet := make(map[string]struct{}, len(c.except))
+	for _, s := range c.except {
+		exceptSet[s] = struct{}{}
+	}
+
+	// 預分配結果切片容量 (假設大部分情況需要過濾)
+	result := make([]*Member, 0, len(to))
+
+	// 單次線性掃描
 	for _, member := range to {
-		toMap[member] = struct{}{}
+		if !hasAnyCommonRoom(member.atRooms, exceptSet) {
+			result = append(result, member)
+		}
 	}
 
-	for _, member := range except {
-		delete(toMap, member)
+	if len(result) == 0 {
+		return nil // 保持與原碼相同行為
 	}
-
-	var result []*Member
-	for member := range toMap {
-		result = append(result, member)
-	}
-
 	return result
+}
+
+// 檢查房間交集 (保持不變)
+func hasAnyCommonRoom(rooms []string, exceptSet map[string]struct{}) bool {
+	for _, room := range rooms {
+		if _, exists := exceptSet[room]; exists {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *ContextTo) Set(key string, value interface{}) {
