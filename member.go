@@ -41,6 +41,7 @@ func (m *Member) Listen() {
 	for {
 		_, msg, err := m.c.ReadMessage()
 		if err != nil {
+			handlerError(m.s, m, err)
 			return
 		}
 		handlerMessage(m.s, m, msg)

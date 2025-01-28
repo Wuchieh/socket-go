@@ -9,6 +9,19 @@ type _req struct {
 	Data  any    `json:"data"`
 }
 
+func handlerError(s *Socket, m *Member, err error) {
+	if s == nil || m == nil {
+		return
+	}
+	c := new(Context)
+	c.reset()
+	c.m = m
+	c.s = s
+	c.handlers = s.onError
+	c.Data = err
+	c.Next()
+}
+
 func handlerMessage(s *Socket, m *Member, b []byte) {
 	if s == nil || m == nil {
 		return

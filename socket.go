@@ -17,11 +17,21 @@ type Socket struct {
 	// rooms	map[string]map[uuid.UUID]*Member
 	rooms sync.Map
 
+	onError []HandlerFunc
+
 	handlers map[string][]HandlerFunc
 }
 
 func NewSocket() *Socket {
 	return &Socket{}
+}
+
+func (s *Socket) OnError(_func ...HandlerFunc) {
+	if len(_func) >= int(abortIndex) {
+		panic("too many handlers")
+	}
+
+	s.onError = _func
 }
 
 // On
