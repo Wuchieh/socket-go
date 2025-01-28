@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/wuchieh/socket-go"
+	"log"
 	"net/http"
 )
 
@@ -35,8 +36,32 @@ func init() {
 		c.Leave("chatroom")
 	})
 
+	s.On("bind", func(c *socket.Context) {
+		type req struct {
+			Username string `json:"username"`
+		}
+
+		var r req
+		if err := c.Bind(&r); err != nil {
+			log.Println(err)
+		}
+
+		fmt.Printf("%#v\n", r)
+	})
+
 	s.On("chat", func(c *socket.Context) {
-		c.To("chatroom").Emit("message", c.Data)
+		var t *socket.ContextTo
+		for i, room := range c.GetMember().GetRooms() {
+			if i == 0 {
+				t = c.To(room)
+			} else {
+				t = t.To(room)
+			}
+		}
+
+		if t != nil {
+			t.Emit("message", c.Data)
+		}
 	})
 }
 

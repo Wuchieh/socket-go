@@ -4,6 +4,7 @@
     <button @click="onClickEmit('echo')">echo</button>
     <button @click="onClickEmit('chat')">chat</button>
     <button @click="onClickJoinRoom">join room</button>
+    <button @click="onClickBind">bind</button>
     <div>
       <div v-for="v in messages">
         {{ v }}
@@ -28,6 +29,14 @@ const onClickJoinRoom = () => {
 const onClickEmit = (e: string) => {
   const m = message.value
   socket.value?.emit(e, m)
+}
+
+const onClickBind = () => {
+  socket.value?.emit('bind', {username: 'test'})
+  socket.value?.emit('bind', 123)
+  socket.value?.emit('bind', '123')
+  socket.value?.emit('bind', 123.123)
+  socket.value?.emit('bind')
 }
 
 const setupSocket = () => {
