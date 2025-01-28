@@ -172,3 +172,17 @@ func (s *Socket) Emit(event string, data any) error {
 
 	return eErr
 }
+
+func (s *Socket) To(room string) *ContextTo {
+	c := new(Context)
+	c.reset()
+	c.s = s
+	return c.To(room)
+}
+
+func (s *Socket) Except(room string) *ContextTo {
+	c := new(Context)
+	c.reset()
+	c.s = s
+	return c.Except(room)
+}
