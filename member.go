@@ -3,6 +3,7 @@ package socket
 import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"slices"
 	"sync"
 )
 
@@ -13,6 +14,18 @@ type Member struct {
 	mx      sync.Mutex
 	id      uuid.UUID
 	Values  sync.Map
+}
+
+func (m *Member) leaveRoom(room string) {
+	if index := slices.Index(m.atRooms, room); index > -1 {
+		m.atRooms = append(m.atRooms[:index], m.atRooms[index+1:]...)
+	}
+}
+
+func (m *Member) joinRoom(room string) {
+	if slices.Index(m.atRooms, room) == -1 {
+		m.atRooms = append(m.atRooms, room)
+	}
 }
 
 func NewMember(conn *websocket.Conn) *Member {

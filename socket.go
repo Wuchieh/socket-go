@@ -129,7 +129,7 @@ func (s *Socket) Handler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Socket) RoomJoin(room string, m *Member) {
+func (s *Socket) roomAddMember(room string, m *Member) {
 	// 使用 LoadOrStore 同時初始化並獲取 roomMap
 	value, _ := s.rooms.LoadOrStore(room, &sync.Map{})
 	roomMap, _ := value.(*sync.Map)
@@ -138,7 +138,7 @@ func (s *Socket) RoomJoin(room string, m *Member) {
 	roomMap.Store(m.id, m)
 }
 
-func (s *Socket) RoomLeave(room string, m *Member) {
+func (s *Socket) roomRemoveMember(room string, m *Member) {
 	// 從 rooms 中加載 roomMap
 	value, ok := s.rooms.Load(room)
 	if !ok {
@@ -149,6 +149,14 @@ func (s *Socket) RoomLeave(room string, m *Member) {
 	if ok {
 		roomMap.Delete(m.id)
 	}
+}
+
+func (s *Socket) RoomJoin(room string, m *Member) {
+	JoinRoom(room, s, m)
+}
+
+func (s *Socket) RoomLeave(room string, m *Member) {
+	LeaveRoom(room, s, m)
 }
 
 func (s *Socket) Emit(event string, data any) error {
