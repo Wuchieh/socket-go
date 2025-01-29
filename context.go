@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"math"
 	"reflect"
-	"slices"
 )
 
 const abortIndex int8 = math.MaxInt8 >> 1
@@ -57,11 +56,7 @@ func (c *Context) Join(room string) {
 	c.m.mx.Lock()
 	defer c.m.mx.Unlock()
 
-	c.s.RoomJoin(room, c.m)
-
-	if slices.Index(c.m.atRooms, room) == -1 {
-		c.m.atRooms = append(c.m.atRooms, room)
-	}
+	JoinRoom(room, c.s, c.m)
 }
 
 // Leave 離開房間
@@ -69,11 +64,7 @@ func (c *Context) Leave(room string) {
 	c.m.mx.Lock()
 	defer c.m.mx.Unlock()
 
-	c.s.RoomLeave(room, c.m)
-	index := slices.Index(c.m.atRooms, room)
-	if index > -1 {
-		c.m.atRooms = append(c.m.atRooms[:index], c.m.atRooms[index+1:]...)
-	}
+	LeaveRoom(room, c.s, c.m)
 }
 
 func (c *Context) IsAborted() bool {
