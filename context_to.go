@@ -152,8 +152,11 @@ func (c *ContextTo) Set(key string, value interface{}) {
 }
 
 func (c *ContextTo) Get(key string) (val any, exists bool) {
-	val, exists = c.c.values[key]
-	return
+	return c.c.Get(key)
+}
+
+func (c *ContextTo) MustGet(key string) any {
+	return c.c.MustGet(key)
 }
 
 // To 設置接收訊息的房間

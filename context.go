@@ -51,6 +51,14 @@ func (c *Context) Get(key string) (val any, exists bool) {
 	return
 }
 
+func (c *Context) MustGet(key string) any {
+	val, exists := c.Get(key)
+	if !exists {
+		panic("key not found")
+	}
+	return val
+}
+
 // Join 加入房間
 func (c *Context) Join(room string) {
 	c.m.mx.Lock()
