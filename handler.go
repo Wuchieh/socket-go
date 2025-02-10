@@ -41,7 +41,15 @@ func handlerMessage(s *Socket, m *Member, b []byte) {
 
 	handlers, ok := s.handlers[req.Event]
 	if !ok {
-		handlerOtherEvent(s, m, req.Event, req.Data)
+		if len(s.otherHandler) == 0 {
+			logf("no handler for event %s", req.Event)
+		} else {
+			c := createContext(s, m)
+			c.handlers = s.otherHandler
+			c.Event = req.Event
+			c.Data = req.Data
+			c.Next()
+		}
 		return
 	}
 
@@ -49,13 +57,6 @@ func handlerMessage(s *Socket, m *Member, b []byte) {
 	c.Event = req.Event
 	c.handlers = handlers
 	c.Data = req.Data
-	c.Next()
-}
-
-func handlerOtherEvent(s *Socket, m *Member, event string, data any) {
-	c := createContext(s, m)
-	c.Event = event
-	c.Data = data
 	c.Next()
 }
 
