@@ -1,8 +1,12 @@
-type handlerFunc<T = any> = (data: T) => void;
+type handlerFunc<T = any> = (data?: T) => void
 
-class SocketGo<EmitData extends Record<string, any>, OnData extends Record<string, any>> {
-    ws: WebSocket;
-    handler: Record<string, handlerFunc>;
+const sleep = (ms: number = 1000) =>
+    new Promise((resolve) => setTimeout(resolve, ms))
+
+class SocketGo<
+    EmitData extends Record<string, any>,
+    OnData extends Record<string, any>,
+> {
     private _ws: WebSocket
     private _isConnected: boolean = false
     private _handler: Record<string, handlerFunc> = {}
@@ -10,25 +14,63 @@ class SocketGo<EmitData extends Record<string, any>, OnData extends Record<strin
     private _onDisconnectHandler: handlerFunc | null = null
 
     constructor(url: string | URL) {
-        this.ws = new WebSocket(url);
-        this.handler = {};
+        this._ws = new WebSocket(url)
 
-        this.ws.onmessage = (e) => {
-            const obj = JSON.parse(e.data);
-            const event = obj['event'];
-            const data = obj['data'];
+        this.init(url)
+    }
 
-            if (event && this.handler[event]) {
-                this.handler[event](data);
+    private init(url: string | URL) {
+        this._ws.onmessage = (e) => {
+            const obj = JSON.parse(e.data)
+            const event = obj['event']
+            const data = obj['data']
+
+            if (event && this._handler[event]) {
+                this._handler[event](data)
             }
-        };
+        }
+
+        this._ws.onclose = async () => {
+            if (this._isConnected) {
+                this._onDisconnectHandler?.()
+            }
+
+            this._isConnected = false
+            await sleep()
+            this._ws = new WebSocket(url)
+            this.init(url)
+        }
+
+        this._ws.onopen = () => {
+            this._isConnected = true
+            this._onConnectHandler?.()
+            this.keepAlive(this._ws)
+        }
     }
 
+    private keepAlive(ws: WebSocket) {
+        sleep(5000).then(() => {
+            if (this._ws != ws) return
+            this.emit("ping")
+            this.keepAlive(ws)
+        })
+    }
+
+    // 傳出事件
+    // 建議Socket 只用於接收 而不進行傳送資料
     emit<K extends keyof EmitData>(event: K, data?: EmitData[K]) {
-        this.ws.send(JSON.stringify({event, data}));
+        this._ws.send(JSON.stringify({event, data}))
     }
 
-    on<K extends keyof OnData>(event: K, handler: handlerFunc<OnData[K] | undefined>) {
+    // 監聽事件
+    on<K extends keyof OnData>(
+        event: K,
+        handler: handlerFunc<OnData[K] | undefined>
+    ) {
+        if (event === 'ping') {
+            throw new Error(`"ping" is a reserved keyword.`)
+        }
+
         if (typeof handler === 'function') {
             this._handler[event as string] = handler
         } else {
@@ -52,4 +94,5 @@ class SocketGo<EmitData extends Record<string, any>, OnData extends Record<strin
     }
 }
 
-export {SocketGo};
+export {SocketGo}
+export default SocketGo
