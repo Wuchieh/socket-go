@@ -30,12 +30,25 @@ class SocketGo<EmitData extends Record<string, any>, OnData extends Record<strin
 
     on<K extends keyof OnData>(event: K, handler: handlerFunc<OnData[K] | undefined>) {
         if (typeof handler === 'function') {
-            this.handler[event as string] = handler;
+            this._handler[event as string] = handler
+        } else {
+            throw new Error(`handler is not a function`)
         }
+    }
+
     // 取消監聽事件
     off<K extends keyof OnData>(event: K) {
         delete this._handler[event as string]
     }
+
+    // Websocket onopen 觘發
+    onConnect(handler: handlerFunc) {
+        this._onConnectHandler = handler
+    }
+
+    // 只有在成功建立連線後才會觸發
+    onDisconnect(handler: handlerFunc<void>) {
+        this._onDisconnectHandler = handler
     }
 }
 
