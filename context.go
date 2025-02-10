@@ -118,6 +118,11 @@ func (c *Context) Emit(e string, data any) error {
 
 // Bind 簡單粗暴的當作 json 解析綁定
 func (c *Context) Bind(obj any) error {
+	return c.BindJSON(obj)
+}
+
+// BindJSON 簡單粗暴的當作 json 解析綁定
+func (c *Context) BindJSON(obj any) error {
 	objVal := reflect.ValueOf(obj)
 	if objVal.Kind() != reflect.Ptr || objVal.IsNil() {
 		return ErrBinData
