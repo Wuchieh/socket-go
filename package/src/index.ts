@@ -32,6 +32,10 @@ class SocketGo<EmitData extends Record<string, any>, OnData extends Record<strin
         if (typeof handler === 'function') {
             this.handler[event as string] = handler;
         }
+    // 取消監聽事件
+    off<K extends keyof OnData>(event: K) {
+        delete this._handler[event as string]
+    }
     }
 }
 
