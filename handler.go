@@ -41,7 +41,6 @@ func handlerMessage(s *Socket, m *Member, b []byte) {
 
 	handlers, ok := s.handlers[req.Event]
 	if !ok {
-		logf("no handler for event %s", req.Event)
 		handlerOtherEvent(s, m, req.Event, req.Data)
 		return
 	}
