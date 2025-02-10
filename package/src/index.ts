@@ -3,6 +3,11 @@ type handlerFunc<T = any> = (data: T) => void;
 class SocketGo<EmitData extends Record<string, any>, OnData extends Record<string, any>> {
     ws: WebSocket;
     handler: Record<string, handlerFunc>;
+    private _ws: WebSocket
+    private _isConnected: boolean = false
+    private _handler: Record<string, handlerFunc> = {}
+    private _onConnectHandler: handlerFunc | null = null
+    private _onDisconnectHandler: handlerFunc | null = null
 
     constructor(url: string | URL) {
         this.ws = new WebSocket(url);
