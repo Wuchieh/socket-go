@@ -2,7 +2,6 @@ package socket
 
 import (
 	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
 	"slices"
 	"sync"
 )
@@ -188,35 +187,10 @@ func (c *ContextTo) Emit(e string, data any) error {
 		return c.err
 	}
 
-	r := Response{
-		Event: e,
-		Data:  data,
-	}
-	pm, err := websocket.NewPreparedMessage(websocket.TextMessage, r.GetByte())
-	if err != nil {
-		return err
-	}
-
 	m := c.getMembers()
 	if len(m) == 0 {
 		return ErrToListEmpty
 	}
 
-	wg := sync.WaitGroup{}
-	wg.Add(len(m))
-	for _, member := range m {
-		go func() {
-			defer wg.Done()
-			err := member.WritePreparedMessage(pm)
-			if err != nil {
-				c.err = addEmitErr(c.err, EmitError{
-					Member: member,
-					Err:    err,
-				})
-			}
-		}()
-	}
-
-	wg.Wait()
-	return c.err
+	return Broadcast(m, e, data)
 }
