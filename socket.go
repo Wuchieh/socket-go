@@ -160,35 +160,8 @@ func (s *Socket) RoomLeave(room string, m *Member) {
 }
 
 func (s *Socket) Emit(event string, data any) error {
-	// Prepare the message
-	res := Response{
-		Event: event,
-		Data:  data,
-	}
-
-	preparedMsg, err := websocket.NewPreparedMessage(websocket.TextMessage, res.GetByte())
-	if err != nil {
-		return err
-	}
-
-	var eErr error
-
-	// Send the prepared message to all members
-	s.members.Range(func(_, value interface{}) bool {
-		if member, ok := value.(*Member); ok {
-			go func(m *Member) {
-				if err := m.WritePreparedMessage(preparedMsg); err != nil {
-					eErr = addEmitErr(eErr, EmitError{
-						Member: m,
-						Err:    err,
-					})
-				}
-			}(member)
-		}
-		return true
-	})
-
-	return eErr
+	m := GetMembers(&s.members)
+	return Broadcast(m, event, data)
 }
 
 func (s *Socket) To(room string) *ContextTo {
