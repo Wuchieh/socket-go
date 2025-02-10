@@ -73,3 +73,9 @@ func Broadcast(m []*Member, event string, data any) error {
 	wg.Wait()
 	return eErr
 }
+
+func checkHandlerFunc(_func ...HandlerFunc) {
+	if len(_func) >= int(abortIndex) {
+		panic("too many handlers")
+	}
+}

@@ -20,6 +20,12 @@ type Socket struct {
 	onError []HandlerFunc
 
 	handlers map[string][]HandlerFunc
+
+	otherHandler []HandlerFunc
+
+	onConnect []HandlerFunc
+
+	onDisconnect []HandlerFunc
 }
 
 func NewSocket() *Socket {
@@ -42,15 +48,31 @@ func (s *Socket) On(e string, _func ...HandlerFunc) {
 		s.handlers = make(map[string][]HandlerFunc)
 	}
 
-	if len(_func) >= int(abortIndex) {
-		panic("too many handlers")
-	}
+	checkHandlerFunc(_func...)
 
 	if _, ok := s.handlers[e]; ok {
 		panic("duplicate handler")
 	}
 
 	s.handlers[e] = _func
+}
+
+func (s *Socket) OnConnect(_func ...HandlerFunc) {
+	checkHandlerFunc(_func...)
+
+	s.onConnect = _func
+}
+
+func (s *Socket) OnDisconnect(_func ...HandlerFunc) {
+	checkHandlerFunc(_func...)
+
+	s.onDisconnect = _func
+}
+
+func (s *Socket) OnOtherEvent(_func ...HandlerFunc) {
+	checkHandlerFunc(_func...)
+
+	s.otherHandler = _func
 }
 
 // CloseMember

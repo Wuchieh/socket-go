@@ -9,14 +9,19 @@ type _req struct {
 	Data  any    `json:"data"`
 }
 
-func handlerError(s *Socket, m *Member, err error) {
-	if s == nil || m == nil {
-		return
-	}
+func createContext(s *Socket, m *Member) *Context {
 	c := new(Context)
 	c.reset()
 	c.m = m
 	c.s = s
+	return c
+}
+
+func handlerError(s *Socket, m *Member, err error) {
+	if s == nil || m == nil {
+		return
+	}
+	c := createContext(s, m)
 	c.handlers = s.onError
 	c.Data = err
 	c.Next()
@@ -37,15 +42,40 @@ func handlerMessage(s *Socket, m *Member, b []byte) {
 	handlers, ok := s.handlers[req.Event]
 	if !ok {
 		logf("no handler for event %s", req.Event)
+		handlerOtherEvent(s, m, req.Event, req.Data)
 		return
 	}
 
-	c := new(Context)
-	c.reset()
-	c.m = m
-	c.s = s
+	c := createContext(s, m)
 	c.Event = req.Event
 	c.handlers = handlers
 	c.Data = req.Data
+	c.Next()
+}
+
+func handlerOtherEvent(s *Socket, m *Member, event string, data any) {
+	c := createContext(s, m)
+	c.Event = event
+	c.Data = data
+	c.Next()
+}
+
+func handlerOnConnect(s *Socket, m *Member) {
+	if len(s.onConnect) == 0 {
+		return
+	}
+
+	c := createContext(s, m)
+	c.handlers = s.onConnect
+	c.Next()
+}
+
+func handlerOnDisconnect(s *Socket, m *Member) {
+	if len(s.onDisconnect) == 0 {
+		return
+	}
+
+	c := createContext(s, m)
+	c.handlers = s.onDisconnect
 	c.Next()
 }

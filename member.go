@@ -51,6 +51,13 @@ func (m *Member) Close() error {
 }
 
 func (m *Member) Listen() {
+	defer func() {
+		handlerOnDisconnect(m.s, m)
+		_ = m.Close()
+	}()
+
+	handlerOnConnect(m.s, m)
+
 	for {
 		_, msg, err := m.c.ReadMessage()
 		if err != nil {
