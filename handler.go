@@ -44,6 +44,7 @@ func handlerMessage(s *Socket, m *Member, b []byte) {
 	c.reset()
 	c.m = m
 	c.s = s
+	c.Event = req.Event
 	c.handlers = handlers
 	c.Data = req.Data
 	c.Next()
