@@ -40,6 +40,7 @@ func init() {
 			return
 		}
 		c.Join(room)
+		c.BroadcastTo("member_join", nil)
 	})
 
 	s.On("leave", func(c *socket.Context) {
@@ -49,6 +50,7 @@ func init() {
 			return
 		}
 		c.Leave(room)
+		c.BroadcastTo("member_leave", nil)
 	})
 
 	s.On("bind", func(c *socket.Context) {
