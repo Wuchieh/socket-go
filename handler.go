@@ -14,6 +14,9 @@ func createContext(s *Socket, m *Member) *Context {
 	c.reset()
 	c.m = m
 	c.s = s
+	c.Broadcast.except = m
+	c.Broadcast.s = s
+	c.Broadcast.c = c
 	return c
 }
 

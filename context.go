@@ -17,8 +17,9 @@ type Context struct {
 	m        *Member
 	values   map[string]interface{}
 
-	Data  any
-	Event string
+	Broadcast *BroadcastTo
+	Data      any
+	Event     string
 }
 
 func (c *Context) reset() {
@@ -29,6 +30,11 @@ func (c *Context) reset() {
 	c.values = nil
 	c.Data = nil
 	c.Event = ""
+	c.Broadcast = &BroadcastTo{
+		s:      nil,
+		c:      nil,
+		except: nil,
+	}
 }
 
 func (c *Context) GetSocket() *Socket {
