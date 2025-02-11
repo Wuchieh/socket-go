@@ -6,10 +6,6 @@ import (
 	"sync"
 )
 
-type To interface {
-	To(room string) *ContextTo
-}
-
 type ContextTo struct {
 	c *Context
 

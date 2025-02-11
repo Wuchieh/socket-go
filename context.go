@@ -6,10 +6,6 @@ import (
 	"reflect"
 )
 
-type Emit interface {
-	Emit(e string, d any) error
-}
-
 const abortIndex int8 = math.MaxInt8 >> 1
 
 type HandlerFunc func(c *Context)
