@@ -32,6 +32,10 @@ func handlerMessage(s *Socket, m *Member, b []byte) {
 		return
 	}
 
+	if string(b) == "ping" {
+		return
+	}
+
 	var req _req
 	err := json.Unmarshal(b, &req)
 	if err != nil {
