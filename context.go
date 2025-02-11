@@ -37,6 +37,10 @@ func (c *Context) reset() {
 	}
 }
 
+func (c *Context) BroadcastTo(e string, d any) error {
+	return c.Broadcast.Emit(e, d)
+}
+
 func (c *Context) GetSocket() *Socket {
 	return c.s
 }
