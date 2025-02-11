@@ -29,7 +29,24 @@ type Socket struct {
 }
 
 func NewSocket() *Socket {
+	return New()
+}
+
+func New() *Socket {
 	return &Socket{}
+}
+
+func Default() *Socket {
+	s := New()
+	s.SetGrader(websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	})
+
+	return s
 }
 
 func (s *Socket) OnError(_func ...HandlerFunc) {
