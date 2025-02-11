@@ -51,7 +51,7 @@ class SocketGo<
     private keepAlive(ws: WebSocket) {
         sleep(5000).then(() => {
             if (this._ws != ws) return
-            this.emit("ping")
+            this._ws.send("ping")
             this.keepAlive(ws)
         })
     }
