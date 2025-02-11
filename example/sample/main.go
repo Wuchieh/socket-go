@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/websocket"
 	"github.com/wuchieh/socket-go"
 	"log"
 	"net/http"
@@ -13,15 +12,7 @@ var (
 )
 
 func init() {
-	s = socket.NewSocket()
-
-	s.SetGrader(websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-		},
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	})
+	s = socket.Default()
 
 	s.On("echo", func(c *socket.Context) {
 		fmt.Println(c.Data)
