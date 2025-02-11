@@ -95,4 +95,4 @@ class SocketGo<
 }
 
 export {SocketGo}
-export default SocketGo
+

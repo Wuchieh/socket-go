@@ -1,7 +1,7 @@
 {
   "name": "socket-go",
   "private": false,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "files": [
     "dist",
@@ -9,15 +9,16 @@
   ],
   "main": "./dist/socket-go.umd.cjs",
   "module": "./dist/socket-go.js",
-  "types": "./index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
-    "types": "./index.d.ts",
+    "types": "./dist/index.d.ts",
     "import": "./dist/socket-go.js",
     "require": "./dist/socket-go.umd.cjs"
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "publish": "npm publish --access public"
   },
   "devDependencies": {
     "typescript": "~5.7.2",
