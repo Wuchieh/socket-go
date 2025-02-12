@@ -1,0 +1,21 @@
+html, body {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+dialog {
+  outline: none;
+  border: none;
+  border-radius: 8px;
+}
+
+.container {
+  overflow-y: scroll;
+  height: 100dvh;
+}
+
+@for $i from 1 through 12 {
+  .mb-#{$i} {
+    margin-bottom: #{$i*4}px;
+  }
+}

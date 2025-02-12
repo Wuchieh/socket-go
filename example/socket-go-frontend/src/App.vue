@@ -1,60 +1,35 @@
 <template>
-  <div>
-    <input type="text" v-model="message">
-    <button @click="onClickEmit('echo')">echo</button>
-    <button @click="onClickEmit('chat')">chat</button>
-    <button @click="onClickJoinRoom">join room</button>
-    <button @click="onClickBind">bind</button>
-    <button @click="onClickAdd">add</button>
-    <div>
-      <div v-for="v in messages">
-        {{ v }}
+  <div class="container">
+    <dialog ref="dialogRef">
+      <div>
+        <form @submit.prevent="onSubmitName">
+          <s-input label="請輸入暱稱" v-model="name" class="mb-2"/>
+          <s-btn>送出</s-btn>
+        </form>
       </div>
+    </dialog>
+    <div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import SocketGo from "./assets/socket-go";
+import {SocketGo} from 'socket-go'
 import {onMounted, ref} from "vue";
+import SInput from "./components/SInput.vue";
+import SBtn from "./components/SBtn.vue";
 
-type socket = SocketGo<any, any>
-
-const message = ref('')
-const messages = ref<string[]>([])
-const socket = ref<socket | null>(null);
-const onClickJoinRoom = () => {
-  socket.value?.emit('join')
-}
-
-const onClickEmit = (e: string) => {
-  const m = message.value
-  socket.value?.emit(e, m)
-}
-
-const onClickBind = () => {
-  socket.value?.emit('bind', {username: 'test'})
-}
-
-const onClickAdd = () => {
-  socket.value?.emit('add')
-}
-
-const setupSocket = () => {
-  const _socket = new SocketGo("ws://localhost:8080/ws");
-
-  _socket.on('message', (msg: string) => {
-    messages.value.push(msg);
-  })
-
-  socket.value = _socket
+const ws = new SocketGo("ws://localhost:8080/ws")
+const dialogRef = ref<HTMLDialogElement | null>(null)
+const name = ref("")
+const onSubmitName = () => {
+  ws.emit("echo",name.value)
 }
 
 onMounted(() => {
-  setupSocket()
+  dialogRef.value?.showModal()
 })
 </script>
 
 <style scoped>
-
 </style>
