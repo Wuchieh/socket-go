@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/websocket"
 	"net/http"
 	"sync"
-	"time"
 )
 
 type Socket struct {
@@ -153,10 +152,10 @@ func (s *Socket) Handler(w http.ResponseWriter, r *http.Request) {
 		_ = r.Body.Close()
 	}()
 
-	startTime := time.Now()
-	defer func() {
-		logf(time.Now().Sub(startTime).String())
-	}()
+	//startTime := time.Now()
+	//defer func() {
+	//	logf(time.Now().Sub(startTime).String())
+	//}()
 
 	member, err := s.CreateMember(w, r)
 	if err != nil {
