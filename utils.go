@@ -61,6 +61,7 @@ func Broadcast(m []*Member, event string, data any) error {
 	wg.Add(len(m))
 	for _, member := range m {
 		go func(member *Member) {
+			defer wg.Done()
 			if err := member.c.WritePreparedMessage(preparedMsg); err != nil {
 				eErr = addEmitErr(eErr, EmitError{
 					Member: member,
