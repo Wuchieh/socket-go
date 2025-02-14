@@ -1,3 +1,4 @@
+
 html, body {
   margin: 0;
   box-sizing: border-box;
@@ -7,6 +8,12 @@ dialog {
   outline: none;
   border: none;
   border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.show {
+  opacity: 1;
 }
 
 .container {
